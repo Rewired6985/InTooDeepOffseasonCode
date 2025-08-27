@@ -17,6 +17,11 @@ public class ArmMovementSubsystem extends SubsystemBase
     private final Motor Leftmotor;
     private final Motor Wormmotor;
 
+    public double rarmspeed;
+    public double larmspeed;
+    public double wormspeed;
+    public int SwitchCounter;
+
     public ArmMovementSubsystem(Motor rarm, Motor larm, Motor warm)
     {
         Rightmotor = rarm;

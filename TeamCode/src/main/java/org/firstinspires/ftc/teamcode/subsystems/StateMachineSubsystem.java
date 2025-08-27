@@ -12,6 +12,13 @@ public class StateMachineSubsystem extends SubsystemBase
     public boolean DrivetrainInPosition = false;
     public boolean InAutonomous;
 
+
+    public double arm_target;
+    public double worm_target;
+    public int wrist_target;
+    public int twister_target;
+    public int claw_target;
+
     public void StateHandler()
     {
         switch (StateID)

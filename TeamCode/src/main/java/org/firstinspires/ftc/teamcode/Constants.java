@@ -8,10 +8,8 @@ public final class Constants
 
     //the following section are values used by the code in auto building process
 
-    public static final double k_RANDOMCOEFFICIENT = 1;
-    public static final double k_DRIVETRAINPROPORTIONALCOEFFICIENT = 0.005;
+    public static final double k_TRAJECTORYCOEFFICIENT = 1;
     public static final double k_TRAJECTORYTHRESHOLD = 600;
-    public static final double k_DIVISOR = 1;
     public static final double k_STRAFECONVERSION = 41.19;
     public static final double k_DRIVECONVERSION = 32.84;
     public static final int km_STRAFE = 1;
@@ -700,7 +698,7 @@ public final class Constants
     //preset constants
     public static final int kp_SUBMERSIBLE = 1;
     public static final int kp_OFFWALL = 2;
-    public static final int kp_UNDERCHANBER = 3;
+    public static final int kp_UNDERCHAMBER = 3;
     public static final int kp_TELECHAMBER = 4;
     public static final int kp_OVERCHAMBER = 5;
     public static final int kp_AUTOCHAMBER = 6;
@@ -708,7 +706,12 @@ public final class Constants
     public static final int kp_ASCENT = 8;
 
 
-    public static final double k_SHOULDERPROPORTIONALCOEFFICIENT = 1;
-    public static final double k_ELBOWPROPORTIONALCOEFFICIENT = 1;
+    public static final int kp_TWIST0   = 9;
+    public static final int kp_TWIST45  = 10;
+    public static final int kp_TWIST90  = 11;
+    public static final int kp_TWIST135 = 12;
+    public static final int kp_TWIST180 = 13;
+
+    public static final int kp_MANUAL = 15;
 
 }

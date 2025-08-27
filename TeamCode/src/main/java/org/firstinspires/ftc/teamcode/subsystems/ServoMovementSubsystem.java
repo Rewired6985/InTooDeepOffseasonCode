@@ -9,6 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ServoMovementSubsystem extends SubsystemBase
 {
 
+    public int TargetPosition;
+    public boolean ClawOpen = false;
+    public int SwitchCounter;
+
     private final ServoEx Wristservo;
     private final ServoEx Twistservo;
     private final ServoEx Clawservo;

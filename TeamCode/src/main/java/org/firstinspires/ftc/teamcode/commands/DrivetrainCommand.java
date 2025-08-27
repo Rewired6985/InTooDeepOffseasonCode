@@ -1,20 +1,26 @@
 package org.firstinspires.ftc.teamcode.commands;
 
-
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.PIController;
+
 import org.firstinspires.ftc.teamcode.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.StateMachineSubsystem;
-
 
 public class DrivetrainCommand extends CommandBase
 {
 
+    private final PIController m_PIfr = new PIController(0.005, 0);
+    private final PIController m_PIfl = new PIController(0.005, 0);
+    private final PIController m_PIbr = new PIController(0.005, 0);
+    private final PIController m_PIbl = new PIController(0.005, 0);
+
     private final DrivetrainSubsystem m_subsystem;
     private final StateMachineSubsystem ms_subsystem;
-    private final GamepadEx m_drivercontroller;
+    private final Gamepad m_drivercontroller;
 
 
         public boolean UseCustom = false;
@@ -38,7 +44,7 @@ public class DrivetrainCommand extends CommandBase
     public DrivetrainCommand
             (DrivetrainSubsystem subsystem,
              StateMachineSubsystem state_subsystem,
-             GamepadEx DriverController)
+             Gamepad DriverController)
     {
         m_subsystem = subsystem;
         ms_subsystem = state_subsystem;
@@ -67,10 +73,10 @@ public class DrivetrainCommand extends CommandBase
             }
             else
             {
-                FRStartPosition = (m_subsystem.SetPosition) + FRStartPosition;
-                FLStartPosition = (m_subsystem.SetPosition * m_subsystem.StrafeCoefficient) + FLStartPosition;
-                BRStartPosition = (m_subsystem.SetPosition * m_subsystem.StrafeCoefficient) + BRStartPosition;
-                BLStartPosition = (m_subsystem.SetPosition) + BLStartPosition;
+                FRStartPosition = (m_subsystem.SetPosition * m_subsystem.StrafeCoefficient) + FRStartPosition;
+                FLStartPosition = (m_subsystem.SetPosition) + FLStartPosition;
+                BRStartPosition = (m_subsystem.SetPosition) + BRStartPosition;
+                BLStartPosition = (m_subsystem.SetPosition * m_subsystem.StrafeCoefficient) + BLStartPosition;
             }
 
             switch (ms_subsystem.StateID)
@@ -1087,90 +1093,148 @@ public class DrivetrainCommand extends CommandBase
 
             if (UseCustom)
             {
-                if (m_subsystem.FRSetPosition < Constants.k_TRAJECTORYTHRESHOLD) {
+                if ((m_subsystem.FRSetPosition < -Constants.k_TRAJECTORYTHRESHOLD)) {
+
+                    m_subsystem.FRPositionCoefficient = -Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.FRPositionStateA = m_subsystem.FRPositionCoefficient / 2;
+                    m_subsystem.FRPositionStateB = m_subsystem.FRSetPosition + (Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.FRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.FRTimeStateB = (-(m_subsystem.FRPositionStateB - m_subsystem.FRPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.FRTimeStateA;
+                    m_subsystem.FRTimeStateC = m_subsystem.FRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else if (m_subsystem.FRSetPosition > Constants.k_TRAJECTORYTHRESHOLD)
+                {
+                    m_subsystem.FRPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.FRPositionStateA = m_subsystem.FRPositionCoefficient / 2;
+                    m_subsystem.FRPositionStateB = m_subsystem.FRSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.FRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.FRTimeStateB = ((m_subsystem.FRPositionStateB - m_subsystem.FRPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.FRTimeStateA;
+                    m_subsystem.FRTimeStateC = m_subsystem.FRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else
+                {
                     m_subsystem.FRPositionCoefficient = m_subsystem.FRSetPosition;
                     m_subsystem.FRPositionStateA = m_subsystem.FRSetPosition / 2;
                     m_subsystem.FRPositionStateB = m_subsystem.FRSetPosition / 2;
                     m_subsystem.FRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.FRTimeStateB =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.FRTimeStateC = m_subsystem.TrajectoryPeriod;
-                } else {
-                    m_subsystem.FRPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.FRPositionStateA = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.FRPositionStateB = m_subsystem.FRSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
-                    m_subsystem.FRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
-                    m_subsystem.FRTimeStateB = ((m_subsystem.FRPositionStateB - m_subsystem.FRPositionStateA) / Constants.k_DIVISOR) + m_subsystem.FLTimeStateA;
-                    m_subsystem.FRTimeStateC = m_subsystem.FRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
                 }
 
-                if (m_subsystem.FLSetPosition < Constants.k_TRAJECTORYTHRESHOLD) {
+                if ((m_subsystem.FLSetPosition < -Constants.k_TRAJECTORYTHRESHOLD)) {
+
+                    m_subsystem.FLPositionCoefficient = -Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.FLPositionStateA = m_subsystem.FLPositionCoefficient / 2;
+                    m_subsystem.FLPositionStateB = m_subsystem.FLSetPosition + (Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.FLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.FLTimeStateB = (-(m_subsystem.FLPositionStateB - m_subsystem.FLPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.FLTimeStateA;
+                    m_subsystem.FLTimeStateC = m_subsystem.FLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else if (m_subsystem.FLSetPosition > Constants.k_TRAJECTORYTHRESHOLD)
+                {
+                    m_subsystem.FLPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.FLPositionStateA = m_subsystem.FLPositionCoefficient / 2;
+                    m_subsystem.FLPositionStateB = m_subsystem.FLSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.FLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.FLTimeStateB = ((m_subsystem.FLPositionStateB - m_subsystem.FLPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.FLTimeStateA;
+                    m_subsystem.FLTimeStateC = m_subsystem.FLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else
+                {
                     m_subsystem.FLPositionCoefficient = m_subsystem.FLSetPosition;
                     m_subsystem.FLPositionStateA = m_subsystem.FLSetPosition / 2;
                     m_subsystem.FLPositionStateB = m_subsystem.FLSetPosition / 2;
                     m_subsystem.FLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.FLTimeStateB =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.FLTimeStateC = m_subsystem.TrajectoryPeriod;
-                } else {
-                    m_subsystem.FLPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.FLPositionStateA = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.FLPositionStateB = m_subsystem.FLSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
-                    m_subsystem.FLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
-                    m_subsystem.FLTimeStateB = ((m_subsystem.FLPositionStateB - m_subsystem.FLPositionStateA) / Constants.k_DIVISOR) + m_subsystem.FLTimeStateA;
-                    m_subsystem.FLTimeStateC = m_subsystem.FLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
                 }
 
-                if (m_subsystem.BRSetPosition < Constants.k_TRAJECTORYTHRESHOLD) {
+                if ((m_subsystem.BRSetPosition < -Constants.k_TRAJECTORYTHRESHOLD)) {
+
+                    m_subsystem.BRPositionCoefficient = -Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.BRPositionStateA = m_subsystem.BRPositionCoefficient / 2;
+                    m_subsystem.BRPositionStateB = m_subsystem.BRSetPosition + (Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.BRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.BRTimeStateB = (-(m_subsystem.BRPositionStateB - m_subsystem.BRPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.BRTimeStateA;
+                    m_subsystem.BRTimeStateC = m_subsystem.BRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else if (m_subsystem.BRSetPosition > Constants.k_TRAJECTORYTHRESHOLD)
+                {
+                    m_subsystem.BRPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.BRPositionStateA = m_subsystem.BRPositionCoefficient / 2;
+                    m_subsystem.BRPositionStateB = m_subsystem.BRSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.BRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.BRTimeStateB = ((m_subsystem.BRPositionStateB - m_subsystem.BRPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.BRTimeStateA;
+                    m_subsystem.BRTimeStateC = m_subsystem.BRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else
+                {
                     m_subsystem.BRPositionCoefficient = m_subsystem.BRSetPosition;
                     m_subsystem.BRPositionStateA = m_subsystem.BRSetPosition / 2;
                     m_subsystem.BRPositionStateB = m_subsystem.BRSetPosition / 2;
                     m_subsystem.BRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.BRTimeStateB =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.BRTimeStateC = m_subsystem.TrajectoryPeriod;
-                } else {
-                    m_subsystem.BRPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.BRPositionStateA = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.BRPositionStateB = m_subsystem.BRSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
-                    m_subsystem.BRTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
-                    m_subsystem.BRTimeStateB = ((m_subsystem.BRPositionStateB - m_subsystem.BRPositionStateA) / Constants.k_DIVISOR) + m_subsystem.BRTimeStateA;
-                    m_subsystem.BRTimeStateC = m_subsystem.BRTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
                 }
 
-                if (m_subsystem.BLSetPosition < Constants.k_TRAJECTORYTHRESHOLD) {
+                if ((m_subsystem.BLSetPosition < -Constants.k_TRAJECTORYTHRESHOLD)) {
+
+                    m_subsystem.BLPositionCoefficient = -Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.BLPositionStateA = m_subsystem.BLPositionCoefficient / 2;
+                    m_subsystem.BLPositionStateB = m_subsystem.BLSetPosition + (Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.BLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.BLTimeStateB = (-(m_subsystem.BLPositionStateB - m_subsystem.BLPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.BLTimeStateA;
+                    m_subsystem.BLTimeStateC = m_subsystem.BLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else if (m_subsystem.BLSetPosition > Constants.k_TRAJECTORYTHRESHOLD)
+                {
+                    m_subsystem.BLPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.BLPositionStateA = m_subsystem.BLPositionCoefficient / 2;
+                    m_subsystem.BLPositionStateB = m_subsystem.BLSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.BLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.BLTimeStateB = ((m_subsystem.BLPositionStateB - m_subsystem.BLPositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.BLTimeStateA;
+                    m_subsystem.BLTimeStateC = m_subsystem.BLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else
+                {
                     m_subsystem.BLPositionCoefficient = m_subsystem.BLSetPosition;
                     m_subsystem.BLPositionStateA = m_subsystem.BLSetPosition / 2;
                     m_subsystem.BLPositionStateB = m_subsystem.BLSetPosition / 2;
                     m_subsystem.BLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.BLTimeStateB =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.BLTimeStateC = m_subsystem.TrajectoryPeriod;
-                } else {
-                    m_subsystem.BLPositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.BLPositionStateA = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.BLPositionStateB = m_subsystem.BLSetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
-                    m_subsystem.BLTimeStateA =  m_subsystem.TrajectoryPeriod / 2;
-                    m_subsystem.BLTimeStateB = ((m_subsystem.BLPositionStateB - m_subsystem.BLPositionStateA) / Constants.k_DIVISOR) + m_subsystem.BLTimeStateA;
-                    m_subsystem.BLTimeStateC = m_subsystem.BLTimeStateB +  m_subsystem.TrajectoryPeriod / 2;
                 }
+
             }
             else
             {
-
-                if (m_subsystem.SetPosition < Constants.k_TRAJECTORYTHRESHOLD) {
+                if ((m_subsystem.SetPosition < -Constants.k_TRAJECTORYTHRESHOLD))
+                {
+                    m_subsystem.PositionCoefficient = -Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.PositionStateA = m_subsystem.PositionCoefficient / 2;
+                    m_subsystem.PositionStateB = m_subsystem.SetPosition + (Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.TimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.TimeStateB = (-(m_subsystem.PositionStateB - m_subsystem.PositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.TimeStateA;
+                    m_subsystem.TimeStateC = m_subsystem.TimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else if (m_subsystem.SetPosition > Constants.k_TRAJECTORYTHRESHOLD)
+                {
+                    m_subsystem.PositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
+                    m_subsystem.PositionStateA = m_subsystem.PositionCoefficient / 2;
+                    m_subsystem.PositionStateB = m_subsystem.SetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
+                    m_subsystem.TimeStateA =  m_subsystem.TrajectoryPeriod / 2;
+                    m_subsystem.TimeStateB = ((m_subsystem.PositionStateB - m_subsystem.PositionStateA) / Constants.k_TRAJECTORYCOEFFICIENT) + m_subsystem.TimeStateA;
+                    m_subsystem.TimeStateC = m_subsystem.TimeStateB +  m_subsystem.TrajectoryPeriod / 2;
+                }
+                else
+                {
                     m_subsystem.PositionCoefficient = m_subsystem.SetPosition;
                     m_subsystem.PositionStateA = m_subsystem.SetPosition / 2;
                     m_subsystem.PositionStateB = m_subsystem.SetPosition / 2;
                     m_subsystem.TimeStateA =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.TimeStateB =  m_subsystem.TrajectoryPeriod / 2;
                     m_subsystem.TimeStateC = m_subsystem.TrajectoryPeriod;
-                } else {
-                    m_subsystem.PositionCoefficient = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.PositionStateA = Constants.k_TRAJECTORYTHRESHOLD;
-                    m_subsystem.PositionStateB = m_subsystem.SetPosition - ( Constants.k_TRAJECTORYTHRESHOLD / 2);
-                    m_subsystem.TimeStateA =  m_subsystem.TrajectoryPeriod / 2;
-                    m_subsystem.TimeStateB = ((m_subsystem.PositionStateB - m_subsystem.PositionStateA) / Constants.k_DIVISOR) + m_subsystem.TimeStateA;
-                    m_subsystem.TimeStateC = m_subsystem.TimeStateB +  m_subsystem.TrajectoryPeriod / 2;
                 }
-
-
             }
 
 
@@ -1219,21 +1283,26 @@ public class DrivetrainCommand extends CommandBase
                 BLtarget = m_subsystem.setTrajectoryTarget();
             }
 
-            FRspeed = ((FRtarget * m_subsystem.StrafeCoefficient) + FRStartPosition - m_subsystem.getFRPosition()) * Constants.k_DRIVETRAINPROPORTIONALCOEFFICIENT;
-            FLspeed = ((FLtarget) + FLStartPosition - m_subsystem.getFLPosition()) * Constants.k_DRIVETRAINPROPORTIONALCOEFFICIENT;
-            BRspeed = ((BRtarget) + BRStartPosition - m_subsystem.getBRPosition()) * Constants.k_DRIVETRAINPROPORTIONALCOEFFICIENT;
-            BLspeed = ((BLtarget * m_subsystem.StrafeCoefficient) + BLStartPosition - m_subsystem.getBLPosition()) * Constants.k_DRIVETRAINPROPORTIONALCOEFFICIENT;
+            m_PIfr.m_Error = (FRtarget * m_subsystem.StrafeCoefficient) + FRStartPosition - m_subsystem.getFRPosition();
+            m_PIfl.m_Error = (FLtarget) + FLStartPosition - m_subsystem.getFLPosition();
+            m_PIbr.m_Error = (BRtarget) + BRStartPosition - m_subsystem.getBRPosition();
+            m_PIbl.m_Error = (BLtarget * m_subsystem.StrafeCoefficient) + BLStartPosition - m_subsystem.getBLPosition();
+
+            FRspeed = m_PIfr.GetPI();
+            FLspeed = m_PIfl.GetPI();
+            BRspeed = m_PIbr.GetPI();
+            BLspeed = m_PIbl.GetPI();
         }
         else
         {
-            LeftX  = m_drivercontroller.getLeftX();
-            RightX = m_drivercontroller.getRightX();
-            RightY = m_drivercontroller.getRightY();
+            LeftX  = m_drivercontroller.left_stick_x;
+            RightX = m_drivercontroller.right_stick_x;
+            RightY = m_drivercontroller.right_stick_y;
 
-            FRspeed = (-RightY + LeftX - RightX);
-            FLspeed = ( RightY + LeftX - RightX);
-            BRspeed = (-RightY + LeftX + RightX);
-            BLspeed = ( RightY + LeftX + RightX);
+            FRspeed = (-RightY - LeftX - RightX);
+            FLspeed = ( RightY - LeftX - RightX);
+            BRspeed = (-RightY - LeftX + RightX);
+            BLspeed = ( RightY - LeftX + RightX);
         }
 
         if(     ((m_subsystem.getFRPosition() > (m_subsystem.FRDestination - ms_subsystem.AcceptanceWindow/2))&&

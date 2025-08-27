@@ -108,9 +108,13 @@ public class DrivetrainSubsystem extends SubsystemBase
         {
             TrajectoryTarget = PositionCoefficient * ((1 - Math.cos(Math.PI * (StateTimer/TrajectoryPeriod)))/2);
         }
-        else if (StateTimer < TimeStateB)
+        else if ((StateTimer < TimeStateB) && (SetPosition > 0))
         {
-            TrajectoryTarget = PositionStateA + (Constants.k_RANDOMCOEFFICIENT * (StateTimer - TimeStateA));
+            TrajectoryTarget = PositionStateA + (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - TimeStateA));
+        }
+        else if ((StateTimer < TimeStateB))
+        {
+            TrajectoryTarget = PositionStateA - (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - TimeStateA));
         }
         else if (StateTimer < TimeStateC)
         {
@@ -125,17 +129,23 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     public double setFRTrajectoryTarget()
     {
+        StateTimer = Timer.milliseconds();
+
         if (StateTimer < FRTimeStateA)
         {
             FRTrajectoryTarget = FRPositionCoefficient * ((1 - Math.cos(Math.PI * (StateTimer/TrajectoryPeriod)))/2);
         }
-        else if (StateTimer < FRTimeStateB)
+        else if ((StateTimer < FRTimeStateB) && (FRSetPosition > 0))
         {
-            FRTrajectoryTarget = FRPositionStateA + (Constants.k_RANDOMCOEFFICIENT * (StateTimer - FRTimeStateA));
+            FRTrajectoryTarget = FRPositionStateA + (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - FRTimeStateA));
+        }
+        else if ((StateTimer < FRTimeStateB))
+        {
+            FRTrajectoryTarget = FRPositionStateA - (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - FRTimeStateA));
         }
         else if (StateTimer < FRTimeStateC)
         {
-            FRTrajectoryTarget = (FRPositionStateB - FRPositionStateA) + (FRPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (FRTimeStateB - FRTimeStateA))/TrajectoryPeriod)/2))));
+            FRTrajectoryTarget = (FRPositionStateB - FRPositionStateA) + FRPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (FRTimeStateB - FRTimeStateA))/TrajectoryPeriod)))/2);
         }
         else
         {
@@ -146,17 +156,23 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     public double setFLTrajectoryTarget()
     {
+        StateTimer = Timer.milliseconds();
+
         if (StateTimer < FLTimeStateA)
         {
             FLTrajectoryTarget = FLPositionCoefficient * ((1 - Math.cos(Math.PI * (StateTimer/TrajectoryPeriod)))/2);
         }
-        else if (StateTimer < FLTimeStateB)
+        else if ((StateTimer < FLTimeStateB) && (FLSetPosition > 0))
         {
-            FLTrajectoryTarget = FLPositionStateA + (Constants.k_RANDOMCOEFFICIENT * (StateTimer - FLTimeStateA));
+            FLTrajectoryTarget = FLPositionStateA + (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - FLTimeStateA));
+        }
+        else if ((StateTimer < FLTimeStateB))
+        {
+            FLTrajectoryTarget = FLPositionStateA - (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - FLTimeStateA));
         }
         else if (StateTimer < FLTimeStateC)
         {
-            FLTrajectoryTarget = (FLPositionStateB - FLPositionStateA) + (FLPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (FLTimeStateB - FLTimeStateA))/TrajectoryPeriod)/2))));
+            FLTrajectoryTarget = (FLPositionStateB - FLPositionStateA) + FLPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (FLTimeStateB - FLTimeStateA))/TrajectoryPeriod)))/2);
         }
         else
         {
@@ -167,17 +183,23 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     public double setBRTrajectoryTarget()
     {
+        StateTimer = Timer.milliseconds();
+
         if (StateTimer < BRTimeStateA)
         {
             BRTrajectoryTarget = BRPositionCoefficient * ((1 - Math.cos(Math.PI * (StateTimer/TrajectoryPeriod)))/2);
         }
-        else if (StateTimer < BRTimeStateB)
+        else if ((StateTimer < BRTimeStateB) && (BRSetPosition > 0))
         {
-            BRTrajectoryTarget = BRPositionStateA + (Constants.k_RANDOMCOEFFICIENT * (StateTimer - BRTimeStateA));
+            BRTrajectoryTarget = BRPositionStateA + (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - BRTimeStateA));
+        }
+        else if ((StateTimer < BRTimeStateB))
+        {
+            BRTrajectoryTarget = BRPositionStateA - (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - BRTimeStateA));
         }
         else if (StateTimer < BRTimeStateC)
         {
-            BRTrajectoryTarget = (BRPositionStateB - BRPositionStateA) + (BRPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (BRTimeStateB - BRTimeStateA))/TrajectoryPeriod)/2))));
+            BRTrajectoryTarget = (BRPositionStateB - BRPositionStateA) + BRPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (BRTimeStateB - BRTimeStateA))/TrajectoryPeriod)))/2);
         }
         else
         {
@@ -188,17 +210,23 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     public double setBLTrajectoryTarget()
     {
+        StateTimer = Timer.milliseconds();
+
         if (StateTimer < BLTimeStateA)
         {
             BLTrajectoryTarget = BLPositionCoefficient * ((1 - Math.cos(Math.PI * (StateTimer/TrajectoryPeriod)))/2);
         }
-        else if (StateTimer < BLTimeStateB)
+        else if ((StateTimer < BLTimeStateB) && (BLSetPosition > 0))
         {
-            BLTrajectoryTarget = BLPositionStateA + (Constants.k_RANDOMCOEFFICIENT * (StateTimer - BLTimeStateA));
+            BLTrajectoryTarget = BLPositionStateA + (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - BLTimeStateA));
+        }
+        else if ((StateTimer < BLTimeStateB))
+        {
+            BLTrajectoryTarget = BLPositionStateA - (Constants.k_TRAJECTORYCOEFFICIENT * (StateTimer - BLTimeStateA));
         }
         else if (StateTimer < BLTimeStateC)
         {
-            BLTrajectoryTarget = (BLPositionStateB - BLPositionStateA) + (BLPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (BLTimeStateB - BLTimeStateA))/TrajectoryPeriod)/2))));
+            BLTrajectoryTarget = (BLPositionStateB - BLPositionStateA) + BLPositionCoefficient * ((1 - Math.cos(Math.PI * ((StateTimer - (BLTimeStateB - BLTimeStateA))/TrajectoryPeriod)))/2);
         }
         else
         {
